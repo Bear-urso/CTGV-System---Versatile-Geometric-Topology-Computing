@@ -6,7 +6,10 @@
 
 **Revolutionary Cognitive Engine for Distributed Topological Processing**
 
-The CTGV System is a Proto-Gebit cognitive architecture that models **how to think**, not just **what to answer**. It serves as a semantic flow regulator for AI with explicit decision-making, traceability, and architectural neutrality. The system provides a foundation for cognitive governance and didactic emulation through geometric topology.
+The CTGV System is a computational architecture, developed using an algorithm adapted from CTCE - Electromagnetic Field Topology Computation:
+Modeled in Python, it is treated here as "Proto-Gebit", formulated through graphs and pictograms. It serves as a semantic flow regulator also applicable to AI with explicit decision-making, with traceability and architectural neutrality. The system provides a basis for cognitive governance and didactic emulation through geometric topology.
+
+And with a filter of: **how to think**, and not just **what to answer** in a self-directed manner similar to the "life game of John Conway", but with an approach harmonizing graphs, geometry, fractals and versatile topologies to make decisions in a traceable and auditable way.
 
 ## ✨ Key Features
 
