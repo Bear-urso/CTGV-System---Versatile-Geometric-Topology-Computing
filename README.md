@@ -357,3 +357,7 @@ python check_env.py
 Commercial use requires explicit license from the Creator
 Creator: BEGNOMAR DOS SANTOS PORTO (@begnomar)
 ORCID: 0009-0002-6109-7443
+
+Declaration of Authorship, Intellectual Property and Rights Under Creation.
+SHA256 Hash: 38669f499f7eb9d9bcb43838c4948db7f15b9b53d0ba6a243f8faed52715eb20
+Linked to Bitcoin Block 933302, mined on January 21, 2026 at 11:59:44 UTC
