@@ -1,0 +1,936 @@
+# =========================================================================
+# CTGV SYSTEM V1.3 SOURCE CODE
+# CTGV SYSTEM - Versatile Geometric Topological Computing
+# LIACC v3.2 – LICENSE FOR OPEN INNOVATION AND COLLABORATIVE CAPITALIZATION
+# Commercial use requires explicit license from the Creator
+# Creator: BEGNOMAR DOS SANTOS PORTO (@begnomar)
+# ORCID: 0009-0002-6109-7443
+# Evolution of CTCE - Electromagnetic Field Topological Computing
+# Proof of prior art:
+# Date: June 5, 2025 at 01:40:09 UTC
+# SHA 256: 5084bc879d34ed755d1bf72f2c3ffebf1105259e2ff59e3f4d599dd14c45f377
+# - Verification:
+# https://etc.blockscout.com/tx/
+# 0x9790db9018a993cd9363b2328817f5e8ad3940cc8802e2b4b7b6c80249d6ba26
+# Vinculado ao Bloco Bitcoin  933302, minerado 
+# Em 21 de Janeiro de 2026 às 11:59:44 UTC sob o hash:
+# SHA256:38669f499f7eb9d9bcb43838c4948db7f15b9b53d0ba6a243f8faed52715eb20
+# =========================================================================
+
+from enum import Enum
+from collections import deque
+from dataclasses import dataclass
+from typing import Dict, List, Set, Optional, Tuple
+import math
+import matplotlib.pyplot as plt
+
+def visualize_ctgv_processing(original, processed):
+    """
+    Generates a heatmap to compare input with topological output.
+    """
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    
+    # Original Pattern Plot
+    im1 = axes[0].imshow(original, cmap='viridis', interpolation='nearest')
+    axes[0].set_title("Original Pattern (Input)")
+    plt.colorbar(im1, ax=axes[0])
+    
+    # Network Processed Pattern Plot
+    im2 = axes[1].imshow(processed, cmap='plasma', interpolation='nearest')
+    axes[1].set_title("Final Topological Field (Output)")
+    plt.colorbar(im2, ax=axes[1])
+    
+    plt.tight_layout()
+    plt.show()
+
+# --- FOR TESTING ---
+# After running step [3] in your script, call the function like this:
+# visualize_ctgv_processing(test_pattern, decoded_pattern)
+import numpy as np
+import random
+
+# =========================
+# PROTO-GEBIT PICTOGRAMS
+# =========================
+
+class Shape(Enum):
+    ORIGIN      = "●"
+    FLOW        = "─"
+    DECISOR     = "▲"
+    MEMORY      = "■"
+    RESONATOR   = "○"
+    AMPLIFIER   = "◆"
+    INHIBITOR   = "✖"
+    TRANSFORMER = "⧉"
+    LOOP        = "∞"
+    SENSOR      = "◇"
+
+# =========================
+# FIELD PARAMETERS
+# =========================
+
+DECAY = {
+    Shape.ORIGIN:      1.00,
+    Shape.FLOW:        0.98,
+    Shape.DECISOR:     0.90,
+    Shape.MEMORY:      0.99,
+    Shape.RESONATOR:   1.05,
+    Shape.AMPLIFIER:   1.25,
+    Shape.INHIBITOR:   0.40,
+    Shape.TRANSFORMER: 0.95,
+    Shape.LOOP:        0.98,
+    Shape.SENSOR:      1.00,
+}
+
+# =========================
+# GEOMETRIC CONSTRAINTS
+# =========================
+
+@dataclass
+class GeometricConstraint:
+    """Intrinsic topological constraints"""
+    max_connections: int = float('inf')
+    min_connections: int = 0
+    allow_cycles: bool = True
+    symmetric_required: bool = False
+
+GEOMETRIC_RULES = {
+    Shape.FLOW: GeometricConstraint(max_connections=2, allow_cycles=False),
+    Shape.DECISOR: GeometricConstraint(max_connections=3, min_connections=2, symmetric_required=True),
+    Shape.RESONATOR: GeometricConstraint(max_connections=4, allow_cycles=True, symmetric_required=True),
+    Shape.LOOP: GeometricConstraint(max_connections=2, min_connections=2, allow_cycles=True, symmetric_required=True),
+}
+
+# =========================
+# VECTOR FIELD
+# =========================
+
+class VectorField:
+    """Electromagnetic/photonic field representation"""
+    
+    __slots__ = ['vector', 'phase', 'coherence', '_norm_cache']
+    
+    def __init__(self, dimensions: int = 3):
+        self.vector = np.zeros(dimensions, dtype=np.float32)
+        self.phase = 0.0
+        self.coherence = 1.0
+        self._norm_cache = 0.0
+    
+    def interfere(self, other: 'VectorField') -> float:
+        """Constructive/destructive interference"""
+        # Update cache if necessary
+        if self._norm_cache == 0.0:
+            self._norm_cache = np.linalg.norm(self.vector)
+        
+        dot_product = np.dot(self.vector, other.vector)
+        phase_diff = abs(self.phase - other.phase)
+        
+        # Interference = projection × phase coherence
+        return dot_product * math.cos(phase_diff) * self.coherence
+    
+    def normalize(self, target_magnitude: float = 1.0):
+        """In-place normalization for efficiency"""
+        norm = np.linalg.norm(self.vector)
+        if norm > 1e-10:
+            self.vector *= (target_magnitude / norm)
+            self._norm_cache = target_magnitude
+        else:
+            self._norm_cache = 0.0
+
+# =========================
+# UNIFIED GEBIT
+# =========================
+
+class Gebit:
+    """Fundamental CTGV unit with geometry and fields"""
+    
+    def __init__(self, shape: Shape, intensity: float = 1.0, 
+                 label: str = None, dimensions: int = 3):
+        self.shape = shape
+        self.intensity = intensity
+        self.state = 0.0
+        self.field = VectorField(dimensions)
+        
+        # Weighted connections (topology)
+        self.connections: Dict['Gebit', float] = {}
+        self.locked_connections: Set['Gebit'] = set()
+        
+        # Temporal memory
+        self.history: List[float] = []
+        self.activation_count = 0
+        
+        # Metadata
+        self.label = label or f"{shape.name}_{id(self) % 10000:04d}"
+        self.constraint = GEOMETRIC_RULES.get(shape, GeometricConstraint())
+        
+        # Interference cache
+        self._interference_cache: Dict['Gebit', float] = {}
+        self._cache_valid = False
+    
+    def connect_to(self, other: 'Gebit', weight: float = 1.0, 
+                   locked: bool = False) -> bool:
+        """Connects with geometric validation"""
+        # Validate constraints
+        if len(self.connections) >= self.constraint.max_connections:
+            return False
+        
+        # Check for cycles if not allowed
+        if not self.constraint.allow_cycles:
+            if self._creates_cycle(other):
+                return False
+        
+        # Create connection
+        self.connections[other] = weight
+        if locked:
+            self.locked_connections.add(other)
+        
+        # Symmetry if required
+        if self.constraint.symmetric_required and self.shape == other.shape:
+            other.connections[self] = weight
+        
+        # Invalidate cache
+        self._cache_valid = False
+        other._cache_valid = False
+        
+        return True
+    
+    def _creates_cycle(self, target: 'Gebit') -> bool:
+        """Detects cycles via DFS"""
+        visited = set()
+        
+        def dfs(node):
+            if node == target:
+                return True
+            if node in visited:
+                return False
+            visited.add(node)
+            return any(dfs(n) for n in node.connections)
+        
+        return dfs(self)
+    
+    def calculate_field_interaction(self, neighbor: 'Gebit') -> float:
+        """Field interference with cache"""
+        if self._cache_valid and neighbor in self._interference_cache:
+            return self._interference_cache[neighbor]
+        
+        if neighbor not in self.connections:
+            return 0.0
+        
+        weight = self.connections[neighbor]
+        interference = self.field.interfere(neighbor.field)
+        
+        # Shape modulation
+        if self.shape == Shape.RESONATOR:
+            interference *= (1.0 + 0.1 * math.sin(self.activation_count * 0.5))
+        elif self.shape == Shape.INHIBITOR:
+            interference = max(0, interference * 0.5)
+        
+        result = interference * weight
+        self._interference_cache[neighbor] = result
+        self._cache_valid = True  # FIX: Set cache as valid after calculation
+        
+        return result
+    
+    def invalidate_cache(self):
+        """Invalidates interference cache"""
+        self._cache_valid = False
+        self._interference_cache.clear()
+
+# =========================
+# UNIFIED CTGV ENGINE
+# =========================
+
+class CTGVEngine:
+    """Versatile Geometric Topological Computing Engine"""
+    
+    def __init__(self, threshold: float = 0.001, max_iterations: int = 1000,
+                 use_superposition: bool = True, enable_adaptation: bool = False):
+        self.threshold = threshold
+        self.max_iterations = max_iterations
+        self.use_superposition = use_superposition
+        self.enable_adaptation = enable_adaptation
+        
+        # Engine state
+        self.current_iteration = 0
+        self.global_coherence = 0.0
+        
+        # Logs
+        self.iteration_log: List[Dict] = []
+    
+    def propagate(self, start_nodes: List[Gebit], 
+                  convergence_threshold: float = 0.0001,
+                  reset: bool = True) -> Dict:
+        """
+        Topological field propagation
+        
+        Args:
+            start_nodes: List of source gebits
+            convergence_threshold: Convergence limit
+            reset: If True, resets states before propagating
+        
+        Returns:
+            Dict with execution metrics
+        """
+        # Initialization
+        if reset:
+            self._reset_network(start_nodes)
+        
+        active_set = set(start_nodes)
+        for node in start_nodes:
+            node.state = node.intensity
+            node.field.vector = np.ones_like(node.field.vector) * node.intensity
+        
+        # Propagation loop
+        self.current_iteration = 0
+        delta_max = float('inf')
+        
+        while (self.current_iteration < self.max_iterations and 
+               delta_max > convergence_threshold):
+            
+            delta_max = 0.0
+            next_active = set()
+            
+            for node in active_set:
+                if node.state < self.threshold:
+                    continue
+                
+                # Accumulate contributions
+                scalar_contrib = 0.0
+                field_contrib = np.zeros_like(node.field.vector)
+                
+                for neighbor, weight in node.connections.items():
+                    # Scalar contribution
+                    neighbor_scalar = node.state * weight
+                    
+                    # Vector contribution (interference)
+                    field_interaction = node.calculate_field_interaction(neighbor)
+                    
+                    if self.use_superposition:
+                        scalar_contrib += neighbor_scalar + field_interaction
+                    else:
+                        scalar_contrib = max(scalar_contrib, 
+                                           neighbor_scalar + field_interaction)
+                    
+                    # Vector field
+                    field_contrib += neighbor.field.vector * weight
+                
+                # Apply shape rule
+                new_state = self._apply_shape_rule(node, scalar_contrib)
+                
+                # Update vector field
+                if np.linalg.norm(field_contrib) > 0:
+                    node.field.vector = field_contrib
+                    node.field.normalize(self._get_target_norm(node.shape))
+                    node.field.phase = (node.field.phase + 
+                                      0.1 * node.activation_count) % (2 * math.pi)
+                
+                # Check for change
+                delta = abs(new_state - node.state)
+                if delta > self.threshold:
+                    node.state = new_state
+                    node.activation_count += 1
+                    node.history.append(new_state)
+                    
+                    # Activate neighbors
+                    for neighbor in node.connections:
+                        next_active.add(neighbor)
+                    
+                    delta_max = max(delta_max, delta)
+            
+            # Adaptation (if enabled)
+            if self.enable_adaptation and self.current_iteration % 10 == 0:
+                self._adaptive_rewiring(list(active_set))
+            
+            # Logging
+            self._log_iteration(active_set, delta_max)
+            
+            # Next iteration
+            active_set = next_active
+            self.current_iteration += 1
+        
+        # Final metrics
+        self.global_coherence = self._calculate_coherence(start_nodes)
+        
+        return {
+            'iterations': self.current_iteration,
+            'converged': delta_max <= convergence_threshold,
+            'global_coherence': self.global_coherence,
+            'final_states': self._collect_states(start_nodes),
+            'active_nodes': len(active_set)
+        }
+    
+    def _apply_shape_rule(self, node: Gebit, input_sum: float) -> float:
+        """Advanced rules by shape"""
+        s = node.state
+        d = DECAY[node.shape]
+        n_neighbors = len(node.connections)
+        
+        # DECISOR: Non-linear topology-dependent
+        if node.shape == Shape.DECISOR:
+            exponent = 0.5 + 0.2 * math.log1p(n_neighbors)
+            return min(math.pow(s + input_sum, exponent) * d, 1.0)
+        
+        # RESONATOR: Temporal resonance with saturation
+        elif node.shape == Shape.RESONATOR:
+            resonance = 1.0 + 0.05 * min(node.activation_count, 20)
+            new_val = (s + input_sum) * d * resonance
+            return new_val / (1.0 + abs(new_val))  # Smooth saturation
+        
+        # TRANSFORMER: Non-linear transformation
+        elif node.shape == Shape.TRANSFORMER:
+            return math.tanh((s + input_sum) * d)
+        
+        # LOOP: Feedback with historical average
+        elif node.shape == Shape.LOOP:
+            feedback = node.history[-10:] if len(node.history) >= 10 else node.history
+            avg_feedback = np.mean(feedback) if feedback else 0.0
+            return (s * 0.7 + input_sum * 0.3 + avg_feedback * 0.1) * d
+        
+        # INHIBITOR: Graded inhibition
+        elif node.shape == Shape.INHIBITOR:
+            return max(0, (s + input_sum) * d * 0.3)
+        
+        # SENSOR: Adaptive threshold
+        elif node.shape == Shape.SENSOR:
+            adaptive_threshold = self.threshold * (
+                1.0 + 0.5 * math.sin(self.current_iteration * 0.1)
+            )
+            return s if (s + input_sum) > adaptive_threshold else 0.0
+        
+        # AMPLIFIER: Limited gain
+        elif node.shape == Shape.AMPLIFIER:
+            return min((s + input_sum) * d, 1.0)
+        
+        # FLOW, ORIGIN, MEMORY: Default propagation
+        return min((s + input_sum) * d, 1.0)
+    
+    def _get_target_norm(self, shape: Shape) -> float:
+        """Target magnitude for field normalization"""
+        norms = {
+            Shape.AMPLIFIER: 2.0,
+            Shape.INHIBITOR: 0.5,
+            Shape.RESONATOR: 1.5,
+        }
+        return norms.get(shape, 1.0)
+    
+    def _adaptive_rewiring(self, active_nodes: List[Gebit]):
+        """Adaptive topological rewiring"""
+        # Find weak non-locked connections
+        candidates = []
+        for node in active_nodes:
+            for neighbor, weight in node.connections.items():
+                if (weight < 0.1 and 
+                    neighbor not in node.locked_connections and
+                    random.random() < 0.3):
+                    candidates.append((node, neighbor, weight))
+        
+        # Rewire up to 3
+        for node, old_neighbor, old_weight in candidates[:3]:
+            # Find better substitute
+            available = [n for n in active_nodes 
+                        if n != node and n not in node.connections]
+            if not available:
+                continue
+            
+            new_neighbor = max(available, 
+                             key=lambda n: self._connection_potential(node, n))
+            
+            # Execute rewiring
+            del node.connections[old_neighbor]
+            node.connect_to(new_neighbor, old_weight * 1.1)
+            node.invalidate_cache()
+    
+    def _connection_potential(self, a: Gebit, b: Gebit) -> float:
+        """Connection potential between gebits"""
+        # Field similarity
+        field_sim = abs(np.dot(a.field.vector, b.field.vector))
+        
+        # Shape complementarity
+        shape_comp = 1.0 if a.shape != b.shape else 0.5
+        
+        # State proximity
+        state_prox = 1.0 - min(abs(a.state - b.state), 1.0)
+        
+        return field_sim * shape_comp * state_prox
+    
+    def _reset_network(self, start_nodes: List[Gebit]):
+        """Complete topological reset"""
+        visited = set()
+        
+        def reset_recursive(node):
+            if node in visited:
+                return
+            visited.add(node)
+            node.state = 0.0
+            node.activation_count = 0
+            node.history.clear()
+            node.invalidate_cache()
+            for neighbor in node.connections:
+                reset_recursive(neighbor)
+        
+        for node in start_nodes:
+            reset_recursive(node)
+    
+    def _calculate_coherence(self, nodes: List[Gebit]) -> float:
+        """Global network coherence"""
+        all_nodes = self._collect_all_nodes(nodes)
+        if not all_nodes:
+            return 0.0
+        
+        # State coherence
+        states = [n.state for n in all_nodes if n.state > 0]
+        if not states:
+            return 0.0
+        state_coh = 1.0 - (np.std(states) / max(np.mean(states), 1e-10))
+        
+        # Topological coherence
+        degrees = [len(n.connections) for n in all_nodes]
+        if not degrees:
+            return state_coh
+        degree_coh = 1.0 - (np.std(degrees) / max(np.mean(degrees), 1e-10))
+        
+        return (state_coh * 0.6 + degree_coh * 0.4)
+    
+    def _collect_all_nodes(self, start: List[Gebit]) -> Set[Gebit]:
+        """Collect all reachable nodes"""
+        visited = set()
+        
+        def dfs(node):
+            if node in visited:
+                return
+            visited.add(node)
+            for neighbor in node.connections:
+                dfs(neighbor)
+        
+        for node in start:
+            dfs(node)
+        return visited
+    
+    def _collect_states(self, start: List[Gebit]) -> Dict[str, float]:
+        """Collect final states"""
+        all_nodes = self._collect_all_nodes(start)
+        return {node.label: node.state for node in all_nodes}
+    
+    def _log_iteration(self, active_set: Set[Gebit], delta_max: float):
+        """Log iteration data"""
+        active_states = [n.state for n in active_set if n.state > 0]
+        self.iteration_log.append({
+            'iteration': self.current_iteration,
+            'active_nodes': len(active_set),
+            'avg_state': np.mean(active_states) if active_states else 0.0,
+            'max_delta': delta_max
+        })
+
+# =========================
+# TBA - TEMPORAL BINDING ARBITER
+# =========================
+
+class TemporalBindingArbiter:
+    """
+    Temporal Binding Algorithm for ambiguity resolution
+    Implements TBA v1.0 protocol
+    """
+    
+    def __init__(self, engine: CTGVEngine, binding_threshold: float = 0.7):
+        self.engine = engine
+        self.binding_threshold = binding_threshold
+        self.narrative_strengths: Dict[str, float] = {}
+        self.ambiguity_history: List[float] = []
+    
+    def resolve_ambiguity(self, competing_sources: List[Gebit],
+                         max_cycles: int = 50) -> Dict:
+        """
+        Resolves competition between multiple narratives/interpretations
+        
+        Returns dominant narrative and metrics
+        """
+        print(f"\n[TBA] Starting with {len(competing_sources)} competing sources")
+        
+        # Initialize all sources simultaneously
+        for source in competing_sources:
+            source.state = source.intensity
+        
+        for cycle in range(max_cycles):
+            # Propagate ALL sources together (without reset)
+            result = self.engine.propagate(
+                competing_sources, 
+                reset=False
+            )
+            
+            # Calculate strength of each narrative
+            for source in competing_sources:
+                strength = self._calculate_narrative_strength(source, result)
+                self.narrative_strengths[source.label] = (
+                    self.narrative_strengths.get(source.label, 0.0) * 0.7 +
+                    strength * 0.3
+                )
+            
+            # Calculate ambiguity
+            ambiguity = self._calculate_ambiguity()
+            self.ambiguity_history.append(ambiguity)
+            
+            print(f"  Cycle {cycle}: Ambiguity = {ambiguity:.3f}")
+            
+            # Check if a narrative has dominated
+            if ambiguity < self.binding_threshold:
+                dominant_label = max(self.narrative_strengths.items(), 
+                                   key=lambda x: x[1])[0]
+                print(f"  Dominant narrative found: {dominant_label}")
+                break
+        
+        # Final refinement
+        self._reinforce_dominant(competing_sources)
+        
+        return {
+            'dominant_narrative': max(self.narrative_strengths.items(), 
+                                    key=lambda x: x[1])[0] if self.narrative_strengths else None,
+            'narrative_strengths': self.narrative_strengths,
+            'final_ambiguity': self.ambiguity_history[-1] if self.ambiguity_history else 1.0,
+            'cycles_completed': min(cycle + 1, max_cycles),
+            'ambiguity_history': self.ambiguity_history
+        }
+    
+    def _calculate_narrative_strength(self, source: Gebit, 
+                                      propagation_result: Dict) -> float:
+        """Narrative strength based on reach and coherence"""
+        final_states = propagation_result['final_states']
+        
+        # Reach (how many nodes were activated)
+        active_count = sum(1 for s in final_states.values() 
+                          if s > self.engine.threshold)
+        reach = active_count / max(len(final_states), 1)
+        
+        # Internal coherence
+        states = [s for s in final_states.values() if s > 0]
+        if len(states) > 1:
+            coherence = 1.0 - (np.std(states) / max(np.mean(states), 1e-10))
+        else:
+            coherence = 1.0 if states else 0.0
+        
+        # Temporal stability
+        if len(source.history) >= 5:
+            stability = 1.0 - np.std(source.history[-5:])
+        else:
+            stability = 0.5
+        
+        return reach * 0.4 + coherence * 0.4 + stability * 0.2
+    
+    def _calculate_ambiguity(self) -> float:
+        """
+        Calculates ambiguity level (semantic entropy)
+        0 = clear interpretation
+        1 = high ambiguity
+        """
+        if not self.narrative_strengths:
+            return 1.0
+        
+        strengths = list(self.narrative_strengths.values())
+        if len(strengths) < 2:
+            return 0.0
+        
+        # Ambiguity is high when strengths are similar
+        max_strength = max(strengths)
+        second_strength = sorted(strengths, reverse=True)[1]
+        
+        if max_strength < 0.001:
+            return 1.0
+        
+        # Ratio between second and first strength
+        ambiguity = second_strength / max_strength
+        return min(ambiguity, 1.0)
+    
+    def _reinforce_dominant(self, sources: List[Gebit]):
+        """Reinforces connections of the dominant narrative"""
+        if not self.narrative_strengths:
+            return
+        
+        dominant_label = max(self.narrative_strengths.items(), 
+                           key=lambda x: x[1])[0]
+        dominant = next((s for s in sources if s.label == dominant_label), None)
+        
+        if not dominant:
+            return
+        
+        # Collect all network nodes
+        all_nodes = self.engine._collect_all_nodes([dominant])
+        
+        # Strengthen active connections
+        for node in all_nodes:
+            if node.state > self.engine.threshold:
+                for neighbor in list(node.connections.keys()):
+                    if (neighbor in all_nodes and 
+                        neighbor.state > self.engine.threshold):
+                        # Increase weight (limited to 2.0)
+                        current_weight = node.connections[neighbor]
+                        node.connections[neighbor] = min(current_weight * 1.2, 2.0)
+
+# =========================
+# GEOMETRIC DATA MODELER
+# =========================
+
+class GeometricDataModeler:
+    """Converts conventional data into CTGV structures"""
+    
+    @staticmethod
+    def encode_pattern(pattern: np.ndarray, 
+                      shape_mapping: Dict[float, Shape] = None) -> List[Gebit]:
+        """
+        Encodes 2D pattern into gebit network
+        
+        Args:
+            pattern: 2D array with values [0,1]
+            shape_mapping: Intensity → shape map
+        
+        Returns:
+            List of gebits in grid order
+        """
+        if shape_mapping is None:
+            shape_mapping = {
+                0.0: Shape.INHIBITOR,
+                0.3: Shape.FLOW,
+                0.6: Shape.AMPLIFIER,
+                0.9: Shape.ORIGIN
+            }
+        
+        height, width = pattern.shape
+        grid = []
+        
+        # Create gebits
+        for y in range(height):
+            row = []
+            for x in range(width):
+                intensity = float(pattern[y, x])
+                
+                # Find closest shape
+                closest_val = min(shape_mapping.keys(), 
+                                key=lambda k: abs(k - intensity))
+                shape = shape_mapping[closest_val]
+                
+                # Create gebit
+                gebit = Gebit(
+                    shape=shape,
+                    intensity=intensity,
+                    label=f"G_{y}_{x}",
+                    dimensions=2
+                )
+                row.append(gebit)
+            grid.append(row)
+        
+        # Connect in grid (4-connectivity)
+        connections_count = 0
+        for y in range(height):
+            for x in range(width):
+                current = grid[y][x]
+                
+                # Right
+                if x + 1 < width:
+                    right = grid[y][x + 1]
+                    weight = 1.0 - abs(current.intensity - right.intensity)
+                    if current.connect_to(right, weight):
+                        connections_count += 1
+                
+                # Down
+                if y + 1 < height:
+                    below = grid[y + 1][x]
+                    weight = 1.0 - abs(current.intensity - below.intensity)
+                    if current.connect_to(below, weight):
+                        connections_count += 1
+        
+        print(f"[Modeler] Network {height}×{width}: {height*width} gebits, "
+              f"{connections_count} connections")
+        
+        # Return flat list
+        return [gebit for row in grid for gebit in row]
+    
+    @staticmethod
+    def decode_pattern(network: List[Gebit], 
+                      shape: Tuple[int, int]) -> np.ndarray:
+        """Decodes gebit network to 2D pattern"""
+        height, width = shape
+        pattern = np.zeros((height, width), dtype=np.float32)
+        
+        for i, gebit in enumerate(network[:height * width]):
+            y, x = divmod(i, width)
+            if y < height and x < width:
+                pattern[y, x] = gebit.state
+        
+        return pattern
+
+# =========================
+# COMPLETE USAGE EXAMPLE
+# =========================
+
+def demonstrate_ctgv_system():
+    """Complete CTGV system demonstration"""
+    print("=" * 70)
+    print(" CTGV SYSTEM - Versatile Geometric Topological Computing")
+    print("=" * 70)
+    
+    # ===== 1. SIMPLE NETWORK =====
+    print("\n[1] Creating simple propagation network...")
+    
+    origin = Gebit(Shape.ORIGIN, intensity=1.0, label="Source")
+    flow1 = Gebit(Shape.FLOW, intensity=0.0, label="Channel_1")
+    flow2 = Gebit(Shape.FLOW, intensity=0.0, label="Channel_2")
+    decisor = Gebit(Shape.DECISOR, intensity=0.0, label="Decisor")
+    memory = Gebit(Shape.MEMORY, intensity=0.0, label="Memory")
+    sensor = Gebit(Shape.SENSOR, intensity=0.0, label="Sensor")
+    
+    # Topology
+    origin.connect_to(flow1, 0.9)
+    origin.connect_to(flow2, 0.8)
+    flow1.connect_to(decisor, 0.7)
+    flow2.connect_to(decisor, 0.7)
+    decisor.connect_to(memory, 0.85)
+    memory.connect_to(sensor, 0.9)
+    
+    # Engine
+    engine = CTGVEngine(
+        threshold=0.001,
+        max_iterations=200,
+        use_superposition=True
+    )
+    
+    result = engine.propagate([origin])
+    print(f"  Iterations: {result['iterations']}")
+    print(f"  Converged: {result['converged']}")
+    print(f"  Coherence: {result['global_coherence']:.3f}")
+    print(f"  Final states:")
+    for label, state in result['final_states'].items():
+        if state > 0.01:
+            print(f"    {label}: {state:.4f}")
+    
+    # ===== 2. TBA - AMBIGUITY RESOLUTION =====
+    print("\n[2] Testing TBA - Ambiguity Resolution...")
+    
+    # Two competing narratives
+    narrative_a = Gebit(Shape.ORIGIN, intensity=0.9, label="Narrative_A")
+    narrative_b = Gebit(Shape.ORIGIN, intensity=0.85, label="Narrative_B")
+    
+    # Shared structure
+    processor = Gebit(Shape.DECISOR, intensity=0.0, label="Processor")
+    resonator = Gebit(Shape.RESONATOR, intensity=0.0, label="Resonator")
+    output = Gebit(Shape.AMPLIFIER, intensity=0.0, label="Output")
+    
+    narrative_a.connect_to(processor, 0.8)
+    narrative_b.connect_to(processor, 0.75)
+    processor.connect_to(resonator, 0.9)
+    resonator.connect_to(output, 0.85)
+    
+    # Execute TBA
+    tba = TemporalBindingArbiter(engine, binding_threshold=0.3)
+    resolution = tba.resolve_ambiguity([narrative_a, narrative_b], max_cycles=30)
+    
+    print(f"  Dominant narrative: {resolution.get('dominant_narrative', 'N/A')}")
+    print(f"  Final strengths:")
+    for label, strength in resolution['narrative_strengths'].items():
+        print(f"    {label}: {strength:.4f}")
+    print(f"  Final ambiguity: {resolution['final_ambiguity']:.3f}")
+    
+    # ===== 3. GEOMETRIC DATA MODELING =====
+    print("\n[3] Demonstrating Geometric Data Modeling...")
+    
+    # Test pattern (simplified logo)
+    test_pattern = np.array([
+        [0.1, 0.9, 0.9, 0.1],
+        [0.9, 0.2, 0.2, 0.9],
+        [0.9, 0.2, 0.2, 0.9],
+        [0.1, 0.9, 0.9, 0.1]
+    ], dtype=np.float32)
+    
+    print(f"  Original pattern (4×4):")
+    print(test_pattern)
+    
+    # Encode to CTGV
+    modeler = GeometricDataModeler()
+    gebit_network = modeler.encode_pattern(test_pattern)
+    
+    # Process through network
+    first_gebit = gebit_network[0]
+    process_result = engine.propagate([first_gebit])
+    
+    print(f"  Processing:")
+    print(f"    Iterations: {process_result['iterations']}")
+    print(f"    Coherence: {process_result['global_coherence']:.3f}")
+    
+    # Decode
+    decoded_pattern = modeler.decode_pattern(gebit_network, test_pattern.shape)
+    
+    print(f"  Processed pattern:")
+    print(decoded_pattern)
+    print(f"  Mean difference: {np.mean(np.abs(test_pattern - decoded_pattern)):.4f}")
+    
+    # ===== 4. NETWORK WITH LOOP AND RESONANCE =====
+    print("\n[4] Testing Feedback Loop and Resonance...")
+    
+    input_node = Gebit(Shape.ORIGIN, intensity=0.8, label="Input")
+    loop_a = Gebit(Shape.LOOP, intensity=0.0, label="Loop_A")
+    loop_b = Gebit(Shape.LOOP, intensity=0.0, label="Loop_B")
+    resonator_node = Gebit(Shape.RESONATOR, intensity=0.0, label="Resonator")
+    
+    # Topology with cycle
+    input_node.connect_to(loop_a, 0.9)
+    loop_a.connect_to(loop_b, 0.85)
+    loop_b.connect_to(loop_a, 0.8)  # Closed cycle
+    loop_b.connect_to(resonator_node, 0.9)
+    
+    feedback_result = engine.propagate([input_node])
+    
+    print(f"  Iterations: {feedback_result['iterations']}")
+    print(f"  States with feedback:")
+    for label, state in feedback_result['final_states'].items():
+        if state > 0.01:
+            print(f"    {label}: {state:.4f}")
+    
+    # Show resonator history
+    if len(resonator_node.history) > 0:
+        print(f"  Resonator history (last 5):")
+        print(f"    {resonator_node.history[-5:]}")
+    
+    print("\n" + "=" * 70)
+    print(" DEMONSTRATION COMPLETED")
+    print("=" * 70)
+
+# =========================
+# EXECUTION
+# =========================
+def ctgv_symmetry_detector(pattern):
+    """
+    Uses CTGV network to evaluate pattern quality 
+    based on Global Coherence.
+    """
+    print("\n" + "="*50)
+    print(" PATTERN ANALYZER VIA COHERENCE")
+    print("="*50)
+
+    # 1. High-sensitivity Engine Configuration
+    sensitive_engine = CTGVEngine(
+        threshold=0.0001, 
+        max_iterations=500,
+        use_superposition=True
+    )
+
+    # 2. Modeling: Transform matrix into network
+    modeler = GeometricDataModeler()
+    # Use mapping where center is a Resonator to keep signal alive
+    gebit_network = modeler.encode_pattern(pattern)
+    
+    # 3. Processing
+    # Activate network from corners (origins)
+    sources = [gebit_network[0], gebit_network[-1]] 
+    result = sensitive_engine.propagate(sources)
+
+    # 4. Diagnosis
+    coherence = result['global_coherence']
+    print(f" Coherence Score: {coherence:.4f}")
+    
+    if coherence > 0.85:
+        print(" Result: HIGHLY STRUCTURED PATTERN (SYMMETRIC)")
+    elif coherence > 0.5:
+        print(" Result: SEMI-STRUCTURED PATTERN / LOW NOISE")
+    else:
+        print(" Result: TOPOLOGICAL CHAOS / ASYMMETRY")
+    
+    return coherence
+if __name__ == "__main__":
+    demonstrate_ctgv_system()
