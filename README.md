@@ -4,7 +4,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://badge.fury.io/py/ctgv-system.svg)](https://pypi.org/project/ctgv-system/)
 
-**Revolutionary Cognitive Engine for Distributed Topological Processing**
+**Cognitive Engine for Distributed Topological Processing**
 
 The CTGV System is a computational architecture, developed using an algorithm adapted from CTCE - Electromagnetic Field Topology Computation:
 Modeled in Python, it is treated here as "Proto-Gebit", formulated through graphs and pictograms. It serves as a semantic flow regulator also applicable to AI with explicit decision-making, with traceability and architectural neutrality. The system provides a basis for cognitive governance and didactic emulation through geometric topology.
