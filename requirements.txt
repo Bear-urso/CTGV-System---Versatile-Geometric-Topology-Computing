@@ -1,0 +1,15 @@
+# Core dependencies
+numpy>=1.21.0
+matplotlib>=3.5.0
+
+# Optional dependencies for enhanced functionality
+# GPU acceleration
+cupy>=10.0.0; sys_platform != 'win32'  # CuPy not available on Windows
+numba>=0.56.0
+
+# Machine Learning features
+scikit-learn>=1.0.0
+
+# Development and testing
+pytest>=6.0
+coverage>=6.0

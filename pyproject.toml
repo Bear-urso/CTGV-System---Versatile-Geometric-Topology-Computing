@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ctgv-system"
+version = "1.0.0"
+description = "Versatile Geometric Topology Computing System - A revolutionary cognitive engine for distributed topological processing"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "BEGNOMAR DOS SANTOS PORTO", email = "begnomar@gmail.com"},
+]
+maintainers = [
+    {name = "BEGNOMAR DOS SANTOS PORTO", email = "begnomar@gmail.com"},
+]
+keywords = [
+    "artificial-intelligence",
+    "cognitive-computing",
+    "topology",
+    "geometric-computing",
+    "distributed-computing",
+    "machine-learning",
+    "neural-networks",
+    "graph-processing"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "numpy>=1.21.0",
+    "matplotlib>=3.5.0",
+]
+
+[project.optional-dependencies]
+gpu = ["cupy>=10.0.0", "numba>=0.56.0"]
+ml = ["scikit-learn>=1.0.0"]
+dev = ["pytest>=6.0", "black", "flake8", "sphinx", "coverage"]
+all = ["cupy>=10.0.0", "numba>=0.56.0", "scikit-learn>=1.0.0"]
+
+[project.urls]
+Homepage = "https://github.com/Bear-urso/CTGV-System---Versatile-Geometric-Topology-Computing"
+Documentation = "https://github.com/Bear-urso/CTGV-System---Versatile-Geometric-Topology-Computing#readme"
+Repository = "https://github.com/Bear-urso/CTGV-System---Versatile-Geometric-Topology-Computing"
+Issues = "https://github.com/Bear-urso/CTGV-System---Versatile-Geometric-Topology-Computing/issues"
+Changelog = "https://github.com/Bear-urso/CTGV-System---Versatile-Geometric-Topology-Computing/blob/main/CHANGELOG.md"
+
+[tool.setuptools]
+packages = ["ctgv"]
+
+[tool.setuptools.package-data]
+ctgv = ["*.md", "*.txt"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["ctgv"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
