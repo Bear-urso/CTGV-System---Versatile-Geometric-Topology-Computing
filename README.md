@@ -11,7 +11,7 @@ Modeled in Python, it is treated here as "Proto-Gebit", formulated through graph
 
 And with a filter of: **how to think**, and not just **what to answer** in a self-directed manner similar to the "life game of John Conway", but with an approach harmonizing graphs, geometry, fractals and versatile topologies to make decisions in a traceable and auditable way.
 
-## ✨ Key Features
+## ✨ Key Features (potential)
 
 - 🚀 **Distributed Processing**: Scale to millions of nodes with intelligent graph partitioning
 - 🧠 **Topological Cognition**: Geometric approach to cognitive processing
