@@ -358,10 +358,10 @@ python check_env.py
 
 ## NOTE: I AM BREAKING RIGID PATTERNS OF FORMALITY AND BUREAUCRACY.
 IN RETURN, I OFFER TRANSPARENCY AND HONESTY.
-THIS IS HOW OPEN AND FREE SCIENCE IS BUILT.
-WITH PROOF OF COMPETENCE.
-https://zenodo.org/records/18360864
-https://doi.org/10.5281/zenodo.18360864
+THIS IS HOW OPEN AND FREE SCIENCE IS BUILT. 
+WITH PROOF OF COMPETENCE. 
+Emerging computing paradigm: [https://zenodo.org/records/18360864](https://zenodo.org/records/18360864) 
+CTGV-System-Versions: [https://doi.org/10.5281/zenodo.18360864](https://doi.org/10.5281/zenodo.18360864)
 
 ## License
 
