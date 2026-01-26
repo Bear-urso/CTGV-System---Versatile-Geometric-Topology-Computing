@@ -356,6 +356,13 @@ python check_env.py
 - `tests/`: Testes automatizados
 - `requirements.txt`: Dependências Python
 
+## NOTE: I AM BREAKING RIGID PATTERNS OF FORMALITY AND BUREAUCRACY.
+IN RETURN, I OFFER TRANSPARENCY AND HONESTY.
+THIS IS HOW OPEN AND FREE SCIENCE IS BUILT.
+WITH PROOF OF COMPETENCE.
+https://zenodo.org/records/18360864
+https://doi.org/10.5281/zenodo.18360864
+
 ## License
 
 Commercial use requires explicit license from the Creator
